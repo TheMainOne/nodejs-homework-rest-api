@@ -5,9 +5,11 @@ const registerUser = async (req, res, next) => {
     const user = await authService.registerUser(req.body);
 
     res.status(201).json({
-      name: user.name,
-      email: user.email,
-      subscription: user.subscription,
+      user: {
+        email: user.email,
+        password: user.password,
+        subscription: user.subscription,
+      },
     });
   } catch (error) {
     next(error);

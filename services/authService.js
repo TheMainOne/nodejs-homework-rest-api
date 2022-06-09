@@ -9,7 +9,7 @@ const registerUser = async (userData) => {
   const result = await User.findOne({ email: userData.email });
 
   if (result) {
-    errorHandler(409, "User already exists.");
+    errorHandler(409, "Email in use");
   }
 
   const password = userData.password;

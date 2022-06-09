@@ -10,7 +10,7 @@ const { validateRequest } = require("../../middlewares/validateRequest");
 const { auth } = require("../../middlewares/auth");
 
 router.post("/users/signup", validateRequest(schemaRegister), registerUser);
-// router.post("/login", validateRequest(schemaLogin), loginUser);
+router.post("/users/login", validateRequest(schemaLogin), loginUser);
 // router.post("/logout", auth, logoutUser);
 
 module.exports = router;
