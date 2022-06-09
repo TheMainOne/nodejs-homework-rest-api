@@ -5,7 +5,7 @@ const {
   updateById,
   deleteById,
 } = require("../services/contactService");
-const errorHandler = require("../errorHandler");
+const errorHandler = require("../helpers/errorHandler");
 
 const listContacts = async (req, res, next) => {
   try {

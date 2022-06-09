@@ -1,4 +1,4 @@
-const errorHandler = require("../errorHandler");
+const errorHandler = require("../helpers/errorHandler");
 
 const validateRequest = (schema) => {
   return (req, res, next) => {
