@@ -1,5 +1,5 @@
 const { authenticateUser } = require("../services/authService");
-const authError = { status: 401, message: "Bad credentials" };
+const authError = { status: 401, message: "Not authorized" };
 
 const auth = async (req, res, next) => {
   const { authorization = "" } = req.headers;
