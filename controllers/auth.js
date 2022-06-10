@@ -50,4 +50,25 @@ const GetCurrentUser = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, GetCurrentUser };
+const updateSubscription = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const updatedSubscription = req.body;
+    const userWithNewData = await authService.updateSubscription(
+      _id,
+      updatedSubscription
+    );
+
+    res.json(userWithNewData);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  GetCurrentUser,
+  updateSubscription,
+};

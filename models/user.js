@@ -38,8 +38,13 @@ const schemaLogin = Joi.object({
   password: Joi.string().required(),
 });
 
+const schemaUpdateSubscription = Joi.object({
+  subscription: Joi.string().required().valid("starter", "pro", "business"),
+});
+
 module.exports = {
   User,
   schemaRegister,
   schemaLogin,
+  schemaUpdateSubscription,
 };

@@ -65,9 +65,19 @@ const authenticateUser = async (token) => {
   }
 };
 
+const updateSubscription = async (_id, updatedSubscription) => {
+  const user = User.findByIdAndUpdate(_id, updatedSubscription, { new: true });
+
+  if (!user) {
+    errorHandler(404, "Not Found");
+  }
+  return user;
+};
+
 module.exports = {
   registerUser,
   loginUser,
   authenticateUser,
   logoutUser,
+  updateSubscription,
 };
