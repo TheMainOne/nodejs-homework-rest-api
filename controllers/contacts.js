@@ -9,7 +9,12 @@ const errorHandler = require("../helpers/errorHandler");
 
 const listContacts = async (req, res, next) => {
   try {
-    const contacts = await getAll();
+    const { _id } = req.user;
+    const { page = 1, limit = 10, favorite } = req.query;
+    const skipped = (page - 1) * limit;
+    const skip = skipped < 0 ? 0 : skipped;
+
+    const contacts = await getAll(_id, skip, limit, favorite);
     res.json(contacts);
   } catch (error) {
     next(error);
@@ -33,7 +38,8 @@ const getContactById = async (req, res, next) => {
 
 const addContact = async (req, res, next) => {
   try {
-    const contact = await create(req.body);
+    const { _id } = req.user;
+    const contact = await create({ ...req.body, owner: _id });
     res.status(201).json(contact);
   } catch (error) {
     if (error.message.includes("duplicate")) {

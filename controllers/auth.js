@@ -40,7 +40,7 @@ const logoutUser = async (req, res, next) => {
 const GetCurrentUser = async (req, res, next) => {
   try {
     const { email, subscription } = req.user;
-    console.log(email, subscription);
+
     res.json({
       email: email,
       subscription: subscription,
