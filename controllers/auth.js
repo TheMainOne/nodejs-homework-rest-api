@@ -37,4 +37,17 @@ const logoutUser = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+const GetCurrentUser = async (req, res, next) => {
+  try {
+    const { email, subscription } = req.user;
+    console.log(email, subscription);
+    res.json({
+      email: email,
+      subscription: subscription,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, GetCurrentUser };

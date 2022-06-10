@@ -65,4 +65,9 @@ const authenticateUser = async (token) => {
   }
 };
 
-module.exports = { registerUser, loginUser, authenticateUser, logoutUser };
+module.exports = {
+  registerUser,
+  loginUser,
+  authenticateUser,
+  logoutUser,
+};
