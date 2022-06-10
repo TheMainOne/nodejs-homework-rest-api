@@ -1,5 +1,6 @@
 const { User } = require("../models/user");
 const errorHandler = require("../helpers/errorHandler");
+require("dotenv").config();
 const { SECRET_KEY } = process.env;
 
 const bcrypt = require("bcryptjs");
@@ -22,7 +23,7 @@ const registerUser = async (userData) => {
 };
 
 const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email: email });
+  const user = await User.findOne({ email });
 
   if (!user) {
     errorHandler(401, "Login or password is wrong");
@@ -36,13 +37,14 @@ const loginUser = async ({ email, password }) => {
 
   const payload = {
     id: user._id,
-    subscription: user.subscription,
   };
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "2h" });
+
   await User.findByIdAndUpdate(user._id, { token });
 
   return {
+    user,
     token,
   };
 };

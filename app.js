@@ -16,7 +16,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/v1/contacts", contactsRouter);
 
 app.use((req, res) => {
-  console.log("middleware1");
+  console.log("for wrong path errors");
   res.status(404).json({ message: "Not found" });
 });
 

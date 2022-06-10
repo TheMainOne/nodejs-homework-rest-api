@@ -18,8 +18,11 @@ const registerUser = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
   try {
-    const token = await authService.loginUser(req.body);
-    res.json(token);
+    const { token, user } = await authService.loginUser(req.body);
+    res.json({
+      token: token,
+      user: { email: user.email, subscription: user.subscription },
+    });
   } catch (error) {
     next(error);
   }
