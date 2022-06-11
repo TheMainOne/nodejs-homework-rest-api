@@ -54,12 +54,12 @@ const updateSubscription = async (req, res, next) => {
   try {
     const { _id } = req.user;
     const updatedSubscription = req.body;
-    const userWithNewData = await authService.updateSubscription(
+    const { email, subscription } = await authService.updateSubscription(
       _id,
       updatedSubscription
     );
 
-    res.json(userWithNewData);
+    res.json({ email: email, subscription: subscription });
   } catch (error) {
     next(error);
   }
