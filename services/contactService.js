@@ -1,7 +1,17 @@
 const { Contact } = require("../models/contact");
 
-const getAll = async () => {
-  return Contact.find({});
+const getAll = async (_id, skip, limit, favorite) => {
+  if (favorite) {
+    return Contact.find({ owner: _id, favorite: true }, "", {
+      skip: skip,
+      limit: Number(limit),
+    }).populate("owner", "_id name email subscription");
+  }
+
+  return Contact.find({ owner: _id }, "", {
+    skip: skip,
+    limit: Number(limit),
+  }).populate("owner", "_id name email subscription");
 };
 
 const getById = async (id) => {
