@@ -1,5 +1,6 @@
 const { User } = require("../models/user");
 const errorHandler = require("../helpers/errorHandler");
+const Jimp = require("jimp");
 const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs/promises");
@@ -82,18 +83,24 @@ const updateSubscription = async (_id, updatedSubscription) => {
 };
 
 const updateAvatar = async (file, user) => {
-  const { path, originalname } = file;
+  console.log(file);
+  const { path: tempUpload, originalname } = file;
+  const { id } = user;
 
   try {
-    const resultUpload = path.join(avatarsDir, originalname);
-    await fs.rename(path, resultUpload);
-    const avatarURL = path.join("public", "avatars", originalname);
-    console.log(avatarURL);
+    const resultUpload = path.join(avatarsDir, `${id}_${originalname}`);
+    const avatarURL = path.join("public", "avatars", `${id}_${originalname}`);
+
+    Jimp.read(tempUpload).then((image) => {
+      return image.resize(250, 250).write(resultUpload);
+    });
+    await fs.unlink(tempUpload);
+
     await User.findByIdAndUpdate(user._id, { avatarURL }, { new: true });
-    return { avatarURL };
+    return { email: user.email, avatarURL: avatarURL };
   } catch (error) {
-    await fs.unlink(path);
-    errorHandler(400, "Can't save your avatar");
+    await fs.unlink(tempUpload);
+    errorHandler(400, "Can't save your avatar, something went wrong");
   }
 };
 
