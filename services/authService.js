@@ -1,24 +1,31 @@
 const { User } = require("../models/user");
 const errorHandler = require("../helpers/errorHandler");
+const gravatar = require("gravatar");
+const path = require("path");
+const fs = require("fs/promises");
 require("dotenv").config();
 const { SECRET_KEY } = process.env;
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const registerUser = async (userData) => {
-  const result = await User.findOne({ email: userData.email });
+  const { name, email, password } = userData;
+  const result = await User.findOne({ email });
 
   if (result) {
     errorHandler(409, "Email in use");
   }
 
-  const password = userData.password;
   const hashedPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email);
 
   return User.create({
-    ...userData,
+    name,
+    email,
     password: hashedPassword,
+    avatarURL,
   });
 };
 
@@ -74,10 +81,27 @@ const updateSubscription = async (_id, updatedSubscription) => {
   return user;
 };
 
+const updateAvatar = async (file, user) => {
+  const { path, originalname } = file;
+
+  try {
+    const resultUpload = path.join(avatarsDir, originalname);
+    await fs.rename(path, resultUpload);
+    const avatarURL = path.join("public", "avatars", originalname);
+    console.log(avatarURL);
+    await User.findByIdAndUpdate(user._id, { avatarURL }, { new: true });
+    return { avatarURL };
+  } catch (error) {
+    await fs.unlink(path);
+    errorHandler(400, "Can't save your avatar");
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   authenticateUser,
   logoutUser,
   updateSubscription,
+  updateAvatar,
 };
