@@ -9,6 +9,7 @@ const registerUser = async (req, res, next) => {
         email: user.email,
         password: user.password,
         subscription: user.subscription,
+        avatarUrl: user.avatarURL,
       },
     });
   } catch (error) {
@@ -65,10 +66,20 @@ const updateSubscription = async (req, res, next) => {
   }
 };
 
+const updateAvatar = async (req, res, next) => {
+  try {
+    const avatar = await authService.updateAvatar(req.file, req.user);
+    return res.json(avatar);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   GetCurrentUser,
   updateSubscription,
+  updateAvatar,
 };

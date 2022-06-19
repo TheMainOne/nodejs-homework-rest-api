@@ -6,6 +6,7 @@ const {
   logoutUser,
   GetCurrentUser,
   updateSubscription,
+  updateAvatar,
 } = require("../../controllers/auth");
 const {
   schemaRegister,
@@ -14,6 +15,7 @@ const {
 } = require("../../models/user");
 const { validateRequest } = require("../../middlewares/validateRequest");
 const { auth } = require("../../middlewares/auth");
+const upload = require("../../middlewares/upload");
 
 router.post("/users/signup", validateRequest(schemaRegister), registerUser);
 router.post("/users/login", validateRequest(schemaLogin), loginUser);
@@ -25,5 +27,6 @@ router.patch(
   validateRequest(schemaUpdateSubscription),
   updateSubscription
 );
+router.patch("/users/avatars", auth, upload.single("avatar"), updateAvatar);
 
 module.exports = router;

@@ -1,24 +1,32 @@
 const { User } = require("../models/user");
 const errorHandler = require("../helpers/errorHandler");
+const Jimp = require("jimp");
+const gravatar = require("gravatar");
+const path = require("path");
+const fs = require("fs/promises");
 require("dotenv").config();
 const { SECRET_KEY } = process.env;
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const registerUser = async (userData) => {
-  const result = await User.findOne({ email: userData.email });
+  const { name, email, password } = userData;
+  const result = await User.findOne({ email });
 
   if (result) {
     errorHandler(409, "Email in use");
   }
 
-  const password = userData.password;
   const hashedPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email);
 
   return User.create({
-    ...userData,
+    name,
+    email,
     password: hashedPassword,
+    avatarURL,
   });
 };
 
@@ -74,10 +82,33 @@ const updateSubscription = async (_id, updatedSubscription) => {
   return user;
 };
 
+const updateAvatar = async (file, user) => {
+  console.log(file);
+  const { path: tempUpload, originalname } = file;
+  const { id } = user;
+
+  try {
+    const resultUpload = path.join(avatarsDir, `${id}_${originalname}`);
+    const avatarURL = path.join("public", "avatars", `${id}_${originalname}`);
+
+    Jimp.read(tempUpload).then((image) => {
+      return image.resize(250, 250).write(resultUpload);
+    });
+    await fs.unlink(tempUpload);
+
+    await User.findByIdAndUpdate(user._id, { avatarURL }, { new: true });
+    return { email: user.email, avatarURL: avatarURL };
+  } catch (error) {
+    await fs.unlink(tempUpload);
+    errorHandler(400, "Can't save your avatar, something went wrong");
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   authenticateUser,
   logoutUser,
   updateSubscription,
+  updateAvatar,
 };
