@@ -8,6 +8,7 @@ const {
   updateSubscription,
   updateAvatar,
   confirm,
+  resend,
 } = require("../../controllers/auth");
 const {
   schemaRegister,
@@ -30,5 +31,6 @@ router.patch(
 );
 router.patch("/users/avatars", auth, upload.single("avatar"), updateAvatar);
 router.get("/users/verify/:verificationToken", confirm);
+router.post("/users/verify/", resend);
 
 module.exports = router;

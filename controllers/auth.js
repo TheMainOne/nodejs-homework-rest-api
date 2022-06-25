@@ -43,6 +43,35 @@ const confirm = async (req, res, next) => {
   }
 };
 
+const resend = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      errorHandler(400, "missing required field email");
+    }
+
+    const user = await authService.findUser({ email });
+    if (!user) {
+      errorHandler(404, "User was not found");
+    }
+
+    if (!user.verify) {
+      await sendEmail(user.email, user.verificationToken);
+
+      return res
+        .status(200)
+        .json({ code: 200, message: "Verification email sent" });
+    }
+
+    return res.status(400).json({
+      message: "Verification has already been passed",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 const loginUser = async (req, res, next) => {
   try {
     const { token, user } = await authService.loginUser(req.body);
@@ -109,4 +138,5 @@ module.exports = {
   updateSubscription,
   updateAvatar,
   confirm,
+  resend,
 };
