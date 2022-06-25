@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const Joi = require("joi");
+const { v4 } = require("uuid");
 
 const schema = new Schema(
   {
@@ -23,6 +24,15 @@ const schema = new Schema(
     },
     avatarURL: {
       type: String,
+    },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      default: () => v4(),
+      required: [true, "Verify token is required"],
     },
   },
   { versionKey: false, timestamps: true }

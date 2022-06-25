@@ -7,6 +7,7 @@ const {
   GetCurrentUser,
   updateSubscription,
   updateAvatar,
+  confirm,
 } = require("../../controllers/auth");
 const {
   schemaRegister,
@@ -28,5 +29,6 @@ router.patch(
   updateSubscription
 );
 router.patch("/users/avatars", auth, upload.single("avatar"), updateAvatar);
+router.get("/users/verify/:verificationToken", confirm);
 
 module.exports = router;
