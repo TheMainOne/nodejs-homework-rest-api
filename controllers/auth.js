@@ -1,8 +1,11 @@
 const authService = require("../services/authService");
+const errorHandler = require("../helpers/errorHandler");
+const { sendEmail } = require("../services/index");
 
 const registerUser = async (req, res, next) => {
   try {
     const user = await authService.registerUser(req.body);
+    await sendEmail(user.email, user.verificationToken);
 
     res.status(201).json({
       user: {
@@ -14,6 +17,58 @@ const registerUser = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+const confirm = async (req, res, next) => {
+  try {
+    const { verificationToken } = req.params;
+    const user = await authService.findUser({ verificationToken });
+
+    if (!user) {
+      errorHandler(404, "User not found");
+    }
+
+    await authService.updateUser(user._id, {
+      verify: true,
+      verificationToken: null,
+    });
+
+    return res.status(200).json({
+      code: 200,
+      message: "Email was confirmed",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resend = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      errorHandler(400, "missing required field email");
+    }
+
+    const user = await authService.findUser({ email });
+    if (!user) {
+      errorHandler(404, "User was not found");
+    }
+
+    if (!user.verify) {
+      await sendEmail(user.email, user.verificationToken);
+
+      return res
+        .status(200)
+        .json({ code: 200, message: "Verification email sent" });
+    }
+
+    return res.status(400).json({
+      message: "Verification has already been passed",
+    });
+  } catch (e) {
+    next(e);
   }
 };
 
@@ -82,4 +137,6 @@ module.exports = {
   GetCurrentUser,
   updateSubscription,
   updateAvatar,
+  confirm,
+  resend,
 };

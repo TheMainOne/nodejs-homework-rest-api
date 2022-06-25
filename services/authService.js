@@ -33,6 +33,10 @@ const registerUser = async (userData) => {
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email });
 
+  if (user && !user.verify) {
+    errorHandler(401, "Please confirm your email.");
+  }
+
   if (!user) {
     errorHandler(401, "Login or password is wrong");
   }
@@ -104,6 +108,14 @@ const updateAvatar = async (file, user) => {
   }
 };
 
+const findUser = async (filter) => {
+  return await User.findOne(filter);
+};
+
+const updateUser = async (id, data) => {
+  return User.findByIdAndUpdate(id, data, { new: true });
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -111,4 +123,6 @@ module.exports = {
   logoutUser,
   updateSubscription,
   updateAvatar,
+  findUser,
+  updateUser,
 };
